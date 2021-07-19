@@ -1,5 +1,3 @@
-package day01;
-
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -9,24 +7,27 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
 
-// 从离线数据读取数据然后处理
-// word count
-public class Example2 {
+// 并行度的设置
+// 针对每个算子设置的并行度的优先级高于全局并行度
+// 本程序需要两个任务插槽
+public class Example3 {
     // 记得抛出异常
     public static void main(String[] args) throws Exception {
         // 获取流处理的运行时环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // 设置并行任务的数量为1
         // 需要1个任务插槽
-        env.setParallelism(1);
+//        env.setParallelism(8);
 
         // 读取数据源
-        DataStreamSource<String> stream = env.fromElements("hello world", "hello world");
+        // 并行度设置为1
+        DataStreamSource<String> stream = env.fromElements("hello world", "hello world").setParallelism(1);
 
         // map操作
         // 这里使用的flatMap方法
         // map: 针对流中的每一个元素，输出一个元素
         // flatMap：针对流中的每一个元素，输出0个，1个或者多个元素
+        // 并行度设置为2
         SingleOutputStreamOperator<WordWithCount> mappedStream = stream
                 // 输入泛型：String; 输出泛型：WordWithCount
                 .flatMap(new FlatMapFunction<String, WordWithCount>() {
@@ -38,7 +39,7 @@ public class Example2 {
                             out.collect(new WordWithCount(e, 1L));
                         }
                     }
-                });
+                }).setParallelism(1);
 
         // 分组：shuffle
         KeyedStream<WordWithCount, String> keyedStream = mappedStream
@@ -66,8 +67,7 @@ public class Example2 {
                 });
 
         // 输出
-        result.print();
-
+        result.print().setParallelism(1);
 
         // 执行程序
         env.execute();
