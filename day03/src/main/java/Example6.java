@@ -10,7 +10,7 @@ import org.apache.flink.util.Collector;
 import java.util.Random;
 
 // Integer increases consecutively for 1s
-public class Example5 {
+public class Example6 {
     public static void main(String[] args) throws Exception{
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
