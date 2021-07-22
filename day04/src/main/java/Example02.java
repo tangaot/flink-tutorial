@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Random;
 
+// 每个用户每5秒钟窗口的pv
+// 增量聚合函数和全窗口聚合函数结合使用
 public class Example02 {
         public static void main(String[] args) throws Exception {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();

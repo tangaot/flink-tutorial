@@ -4,6 +4,8 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
+// 每个用户每5秒钟窗口的pv
+// 使用增量聚合函数
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Random;
