@@ -49,7 +49,7 @@ public class Example03 {
             } else {
                 windowState.put(windowStart, 1);
             }
-
+            //设置定时器
             ctx.timerService().registerProcessingTimeTimer(windowEnd - 1L);
         }
 
