@@ -3,14 +3,14 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.watermark.Watermark;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 
 public class Example03 {
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
@@ -33,16 +33,15 @@ public class Example03 {
                     }
                 })
                 .keyBy(r -> 1)
-                .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
+                .window(TumblingEventTimeWindows.of(Time.seconds(5)))
                 .sideOutputLateData(new OutputTag<String>("late") {})
-                .process(
-                        new ProcessWindowFunction<String, String, Integer, TimeWindow>() {
-                            @Override
-                            public void process(Integer integer, Context context, Iterable<String> elements, Collector<String> out) throws Exception {
-                                out.collect("窗口中共有：" + elements.spliterator().getExactSizeIfKnown());
-                            }
-                        }
-                );
+                .process(new ProcessWindowFunction<String, String, Integer, TimeWindow>() {
+                    @Override
+                    public void process(Integer integer, Context context, Iterable<String> elements, Collector<String> out) throws Exception {
+                        out.collect("窗口中共有：" + elements.spliterator().getExactSizeIfKnown());
+                    }
+                });
+
         result.print();
 
         // 侧输出标签是单例模式
